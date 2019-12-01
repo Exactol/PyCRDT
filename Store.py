@@ -12,7 +12,6 @@ class Store:
         # TODO: ignore duplicates
 
         # update id vector clock
-        # self.ids = list( map(lambda i: id if id > self.ids[i] else i, enumerate(op.id)) )
         self.ids = [max(id, newId) for id, newId in zip(self.ids, op.id)]
         if (op.opType == OpType.Add):
             self.state[op.id] = op.value

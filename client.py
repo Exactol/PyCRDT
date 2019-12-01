@@ -1,10 +1,16 @@
 import asyncio
+from singleton import Singleton
 
-async def tcp_client():
-    reader, writer = await asyncio.open_connection('localhost', 1480)
-    writer.write('test\0'.encode())
-    writer.close()
+class Client(metaclass=Singleton):
+    def __init__(self, queue, reader, loop):
+        self.queue = queue
+        self.reader = reader
+        asyncio.run_coroutine_threadsafe(self.run_client(), loop)
 
-
-async def start():
-    asyncio.run(tcp_client())
+    async def run_client(self):
+        while True:
+            data = await self.reader.read(100)
+            # print(data.decode())
+            if not data:
+                break
+            await self.queue.put(data.decode())

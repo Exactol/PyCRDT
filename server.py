@@ -1,21 +1,16 @@
 import asyncio
+from singleton import Singleton
 
-async def tcp_server(reader, writer):
-    data = await reader.read()
-    message = data.decode()
-    addr = writer.get_extra_info('peername')
+class Server(metaclass=Singleton):
+    def __init__(self, queue, writer, loop):
+        self.queue = queue
+        self.writer = writer
+        asyncio.run_coroutine_threadsafe(self.run_server(), loop)
 
-    print(f'Recieved data from {addr}')
-    print(message)
-
-async def main():
-    server = await asyncio.start_server(tcp_server, 'localhost', 1480)
-
-    addr = server.sockets[0].getsockname()
-    print(f'Serving on port {addr}')
-
-    async with server:
-        await server.serve_forever()
-
-def start():
-    asyncio.run(main())
+    async def run_server(self):
+        while True:
+            data = await self.queue.get()
+            if not data:
+                break
+            print(data)
+            self.writer.write(data.encode())
