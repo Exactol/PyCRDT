@@ -17,31 +17,13 @@ class ThreadedServer:
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((self.host, self.port))
         self.sock.settimeout(60)
+        # TODO: increase number of listeners?
+        self.sock.listen(5)
 
-        self.clients: List[socket.socket] = []
+        self.clients: List[socket.socket] = [self.sock]
 
     def start(self):
-        threading.Thread(target=self._accept_connections).start()
         threading.Thread(target=self._listen).start()
-
-    def _accept_connections(self):
-        self.sock.listen(5)
-        print("Listening for connections")
-        while self.running:
-            # wait for new connections with a timeout of 1 second
-            readable, writable, errored = select.select([ self.sock ], [], [], timeout=1)
-            print(readable)
-            for s in readable:
-                if s is self.sock:
-                    client, address = self.sock.accept()
-                    print(f"Recieved connection from {client}:{address}")
-
-                    # store client
-                    self.clients.append(client)
-
-                    client.settimeout(60)
-
-
 
     def stop(self):
         self.running = False
@@ -64,15 +46,35 @@ class ThreadedServer:
         size = 1024
         while self.running:
             try:
-                data = client.recv(size).decode()
-                print(data)
-                if not data or data == "EXIT":
-                    raise "Socket ended"
-            except:
-                print("Closing socket")
-                client.close()
-                self.running = False
-                return
+                # wait for new connections with a timeout of 1 second
+                readable, writable, errored = select.select(self.clients, [], [], 1)
+                for s in readable: #type: socket.socket
+                    # if s is original socket, new connection is available
+                    if s is self.sock:
+                        client, address = self.sock.accept()
+                        print(f"Recieved connection from {address[0]}:{address[1]}")
+
+                        # store client
+                        self.clients.append(client)
+
+                        # TODO: update with current state
+
+                        # client.settimeout(60)
+                    # otherwise new data is available from clients
+                    else:
+                        data = s.recv(size).decode()
+                        # client disconnected
+                        if not data or data == "EXIT":
+                            sock = s.getsockname()
+                            print(f"{sock[0]}:{sock[1]} disconnected")
+                            self.clients.remove(s)
+
+                        print(data)
+
+                for e in errored:
+                    print("ERROR:", e)
+            except Exception as e:
+                print(e)
 
     def send(self, value):
         self.out_queue.put(value)
