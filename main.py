@@ -5,7 +5,6 @@ from threading import Event, Thread
 from typing import Union
 
 from Counter import Counter
-from ServerMode import ServerMode
 from ThreadedClient import ThreadedClient
 from ThreadedServer import ThreadedServer
 
@@ -27,5 +26,5 @@ if __name__ == "__main__":
         if (inp == "z" or inp == "Z"):
             break
         else:
-            server.send("n")
+            server.send(inp)
     server.stop()

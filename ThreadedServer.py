@@ -1,3 +1,4 @@
+import json
 import select
 import socket
 import threading
@@ -40,12 +41,14 @@ class ThreadedServer:
                 data = self.out_queue.get(block=True, timeout=1).encode()
                 # send data to each client connected
                 for client in self.clients:
-                    client.send(data)
+                    # send to external clients
+                    if client is not self.sock:
+                        client.send(data)
+            # ignore empty queue errors
             except Empty:
-                # ignore empty queue errors
                 pass
             except Exception as e:
-                print(e)
+                print("SEND ERROR", e)
 
     def _listen(self):
         size = 1024
@@ -73,7 +76,7 @@ class ThreadedServer:
                         # client.settimeout(60)
                     # otherwise new data is available from clients
                     else:
-                        data = s.recv(size).decode()
+                        data = json.loads(s.recv(size).decode())
                         # client disconnected
                         if not data or data == "EXIT":
                             sock = s.getsockname()
@@ -84,8 +87,8 @@ class ThreadedServer:
                             if (self.senders_running and len( self.clients ) == 1):
                                 print("Stopping sender thread")
                                 self.senders_running = False
-
-                        print(data)
+                        else:
+                            print(data)
 
                 for e in errored:
                     print("ERROR:", e)
@@ -94,4 +97,5 @@ class ThreadedServer:
 
     # TODO: if no clients connected, out_queue will just keep piling up. maybe dont enqueue values if no clients connected
     def send(self, value):
-        self.out_queue.put(value)
+        # serialize with json
+        self.out_queue.put(json.dumps(value))
