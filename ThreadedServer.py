@@ -11,7 +11,7 @@ class ThreadedServer:
         self.host = host
         self.port = port
 
-        self.listeners_running = True
+        self.listeners_running = False
         self.senders_running = False
 
         self.in_queue = Queue()
@@ -28,6 +28,7 @@ class ThreadedServer:
         self.clients: List[socket.socket] = [self.sock]
 
     def start(self):
+        self.listeners_running = True
         threading.Thread(target=self._listen).start()
 
     def stop(self):
@@ -48,10 +49,11 @@ class ThreadedServer:
             except Empty:
                 pass
             except Exception as e:
-                print("SEND ERROR", e)
+                print("Send Error:", e)
 
     def _listen(self):
-        size = 1024
+        # TODO: does this need to increase?
+        size = 2048
         while self.listeners_running:
             try:
                 # wait for new connections with a timeout of 1 second
@@ -76,7 +78,7 @@ class ThreadedServer:
                         # client.settimeout(60)
                     # otherwise new data is available from clients
                     else:
-                        data = json.loads(s.recv(size).decode())
+                        data = s.recv(size).decode()
                         # client disconnected
                         if not data or data == "EXIT":
                             sock = s.getsockname()
@@ -88,6 +90,7 @@ class ThreadedServer:
                                 print("Stopping sender thread")
                                 self.senders_running = False
                         else:
+                            data = json.loads(data)
                             print(data)
 
                 for e in errored:
