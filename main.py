@@ -29,5 +29,7 @@ if __name__ == "__main__":
             break
         else:
             counter.increment()
+            counter.print()
+            counter.print_hist()
             # server.send(inp)
     server.stop()

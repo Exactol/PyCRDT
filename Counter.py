@@ -10,12 +10,15 @@ class Counter:
         self.state = CRDTStore(server)
 
     def increment(self):
+        v = self.state.get("a")
+        if v is None:
+            v = 0
         newId = self.state.create_id()
-        op = AddOp(newId, 1)
+        op = AddOp(newId, "a", v + 1)
         self.state.apply(op)
 
-    def get_count(self):
-        total = 0
-        for _, v in self.state.state.items():
-            total += v
-        return total
+    def print(self):
+        print(self.state.get("a"))
+
+    def print_hist(self):
+        print(" -> ".join(map(lambda x: str(x.id), self.state.history)))

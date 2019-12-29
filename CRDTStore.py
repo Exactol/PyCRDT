@@ -16,8 +16,8 @@ class CRDTStore:
         if server is not None:
             self.server.on_recieve += self.on_recieve
 
-    def on_recieve(self, data):
-        print(data)
+    def on_recieve(self, op: Op):
+        print(op)
 
     def merge(self, op: Op):
         # TODO: ignore duplicates
@@ -26,7 +26,7 @@ class CRDTStore:
         self.ids = [max(id, newId) for id, newId in zip(self.ids, op.id)]
 
         # apply and store history
-        op.apply(self.state)
+        self.state = op.apply(self.state)
         self.history.append(op)
 
     def apply(self, op: Op):
@@ -34,10 +34,16 @@ class CRDTStore:
         self.merge(op)
 
         # send op to clients
-        if self.server is not None:
-            self.server.send(op)
+        # if self.server is not None:
+        #     self.server.send(op)
 
     def create_id(self):
         newId = list(self.ids)
         newId[self.id] += 1
         return newId
+
+    def get(self, field: str):
+        if field in self.state:
+            return self.state[field][1] # TODO: check if tombstoned
+
+        return None
