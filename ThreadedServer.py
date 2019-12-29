@@ -6,6 +6,8 @@ from queue import Empty, Queue
 from typing import List
 
 from Callback import Callback
+from JSON.OpSerializer import OpSerializer
+from JSON.Payload import Payload
 
 
 class ThreadedServer:
@@ -95,7 +97,8 @@ class ThreadedServer:
                                 self.senders_running = False
                         else:
                             data = json.loads(data)
-                            self.on_recieve(data)
+                            payload = Payload.from_dict(data)
+                            self.on_recieve(payload)
 
                 for e in errored:
                     print("ERROR:", e)
@@ -105,4 +108,4 @@ class ThreadedServer:
     # TODO: if no clients connected, out_queue will just keep piling up. maybe dont enqueue values if no clients connected
     def send(self, value):
         # serialize with json
-        self.out_queue.put(json.dumps(value))
+        self.out_queue.put(json.dumps(Payload(value), cls=OpSerializer))

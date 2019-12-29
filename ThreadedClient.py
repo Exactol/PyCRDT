@@ -5,6 +5,8 @@ import threading
 from queue import Empty, Queue
 
 from Callback import Callback
+from JSON.OpSerializer import OpSerializer
+from JSON.Payload import Payload
 
 
 class ThreadedClient:
@@ -60,7 +62,8 @@ class ThreadedClient:
                         raise Exception("Socket disconnected")
                     else:
                         data = json.loads(data)
-                        self.on_recieve(data)
+                        payload = Payload.from_dict(data)
+                        self.on_recieve(payload)
 
                 for e in errored:
                     print("ERROR:", e)
@@ -72,4 +75,4 @@ class ThreadedClient:
                 return
 
     def send(self, value):
-        self.out_queue.put(json.dumps(value))
+        self.out_queue.put(json.dumps(Payload(value), cls=OpSerializer))
