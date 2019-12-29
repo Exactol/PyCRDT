@@ -4,6 +4,8 @@ import socket
 import threading
 from queue import Empty, Queue
 
+from Callback import Callback
+
 
 class ThreadedClient:
     def __init__(self, host, port):
@@ -15,6 +17,8 @@ class ThreadedClient:
 
         self.in_queue = Queue()
         self.out_queue = Queue()
+
+        self.on_recieve = Callback()
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -56,7 +60,7 @@ class ThreadedClient:
                         raise Exception("Socket disconnected")
                     else:
                         data = json.loads(data)
-                        print(data)
+                        self.on_recieve(data)
 
                 for e in errored:
                     print("ERROR:", e)

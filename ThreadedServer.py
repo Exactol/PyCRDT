@@ -5,6 +5,8 @@ import threading
 from queue import Empty, Queue
 from typing import List
 
+from Callback import Callback
+
 
 class ThreadedServer:
     def __init__(self, host, port):
@@ -16,6 +18,8 @@ class ThreadedServer:
 
         self.in_queue = Queue()
         self.out_queue = Queue()
+
+        self.on_recieve = Callback()
 
         # initial socket setup
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -91,7 +95,7 @@ class ThreadedServer:
                                 self.senders_running = False
                         else:
                             data = json.loads(data)
-                            print(data)
+                            self.on_recieve(data)
 
                 for e in errored:
                     print("ERROR:", e)

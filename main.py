@@ -21,10 +21,13 @@ if __name__ == "__main__":
         server = ThreadedClient('localhost', 1480)
 
     server.start()
+    counter = Counter(server)
+
     while True:
         inp = input("Press z to exit\n")
         if (inp == "z" or inp == "Z"):
             break
         else:
-            server.send(inp)
+            counter.increment()
+            # server.send(inp)
     server.stop()
