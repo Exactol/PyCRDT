@@ -33,10 +33,11 @@ class CRDTStore:
 
         # update id vector clock with maximum id for each id
         for id, value in op.id.items():
+            # must cast id to int, as ints cannot be JSON keys
             if id in self.ids:
-                self.ids[id] = max(self.ids[id], value)
+                self.ids[int(id)] = max(self.ids[int(id)], value)
             else:
-                self.ids[id] = value
+                self.ids[int(id)] = value
 
         # apply and store history
         self.state = op.apply(self.state)
