@@ -15,8 +15,8 @@ class Counter:
         v = self.state.get("a")
         if v is None:
             v = 0
-        newId = self.state.create_id()
-        op = AddOp(newId, "a", v + 1)
+        newVersion = self.state.version.increment()
+        op = AddOp(newVersion, "a", v + 1)
         self.state.apply(op)
 
     def print(self):
