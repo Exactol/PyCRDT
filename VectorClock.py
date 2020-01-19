@@ -4,7 +4,9 @@ class VectorClock():
   def __init__(self, user_id, vector: Dict = None):
     self.user_id = user_id
     if vector:
-      self.vector = vector
+      self.vector = vector.copy()
+      if user_id not in self.vector:
+        self.vector[user_id] = 0
     else:
       self.vector = {user_id: 0}
 
@@ -30,24 +32,30 @@ class VectorClock():
     return self.vector == vector.vector
 
   def __ne__(self, vector):
-    return self.vector != vector.vector
+    return not self == vector
 
   def __lt__(self, vector):
+    # print(f"self: {self.vector}\tOther: {vector.vector}")
     if (self.vector == vector.vector):
       return False
 
-    isBefore = False
+    # ensure that shared user id versions come before
+    isBefore = all(self.vector[user_id] <= vector.vector[user_id] for user_id, _ in zip(self.vector.keys(), vector.vector.keys()))
 
-    for user_id in zip(self.vector.items(), vector.vector.items()):
-      print(user_id)
-      pass
-    # print(list(zip(self.vector, vector.vector)))
-
-    # for user_id, version in self.vector:
-
+    # if before, make sure other vector doesnt have extra keys
+    if isBefore:
+      # if other vector contains more keys, it is older
+      isBefore = len(self.vector.keys()) <= len(vector.vector.keys())
+    return isBefore
 
   def __gt__(self, vector):
-    pass
+    return not self < vector
+
+  def __le__(self, vector):
+    return self < vector or self == vector
+
+  def __ge__(self, vector):
+    return self > vector or self == vector
 
   def __str__(self):
     return f"Vector Version: {str(self.vector)}"

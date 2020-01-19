@@ -34,5 +34,7 @@ if __name__ == "__main__":
 
     v1 = VectorClock(0)
     v2 = VectorClock(1, v1.vector).increment()
-    print(v1, v2)
+    v3 = VectorClock(1, v2.vector)
+    v1 = v1.increment().increment().increment()
     print(v1 < v2)
+    print(v1 > v2)
