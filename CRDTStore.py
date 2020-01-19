@@ -9,16 +9,14 @@ from Callback import Callback
 
 
 class CRDTStore:
-    def __init__(self, server = None, user_id = 0, initial = {}):
+    def __init__(self, server = None, user_id = 0, initial_version = None, initial = {}):
         self.state = initial
         self.initial_state = initial
         # self.history = [] # TODO: make own class so history can be stored in order of version clock
         self.history = History()
 
-        self.ids = {} # vector clock to hold all ids
         self.user_id = user_id
-        # self.ids[self.user_id] = 0 # initialize vectorclock
-        self.version = VectorClock(user_id)
+        self.version = VectorClock(user_id, initial_version)
 
         self.server = server
         if server is not None:
