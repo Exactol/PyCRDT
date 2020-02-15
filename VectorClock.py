@@ -1,7 +1,7 @@
 from typing import Dict
 
 class VectorClock():
-  def __init__(self, user_id, vector: Dict = None):
+  def __init__(self, user_id: int, vector: Dict = None):
     self.user_id = user_id
     if vector:
       self.vector = vector.copy()

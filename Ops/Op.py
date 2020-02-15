@@ -17,3 +17,11 @@ class Op(ABC):
     @abstractmethod
     def undo(self, state):
         pass
+
+    @abstractmethod
+    def from_proto(self, proto):
+        pass
+
+    @abstractmethod
+    def to_proto(self):
+        pass

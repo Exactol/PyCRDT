@@ -60,52 +60,52 @@ class ThreadedServer:
     def _listen(self):
         # TODO: does this need to increase?
         size = 2048
-        while self.listeners_running:
-            try:
-                # wait for new connections with a timeout of 1 second
-                readable, writable, errored = select.select(self.clients, [], [], 1)
-                for s in readable: #type: socket.socket
-                    # if s is original socket, new connection is available
-                    if s is self.sock:
-                        client, address = self.sock.accept()
-                        print(f"Recieved connection from {address[0]}:{address[1]}")
+        # while self.listeners_running:
+        #     try:
+        #         # wait for new connections with a timeout of 1 second
+        #         readable, writable, errored = select.select(self.clients, [], [], 1)
+        #         for s in readable: #type: socket.socket
+        #             # if s is original socket, new connection is available
+        #             if s is self.sock:
+        #                 client, address = self.sock.accept()
+        #                 print(f"Recieved connection from {address[0]}:{address[1]}")
 
-                        # store client
-                        self.clients.append(client)
+        #                 # store client
+        #                 self.clients.append(client)
 
-                        # if sending thread hasnt started yet, start it. will always have atleast 1 client, since server socket is stored in same array
-                        if (not self.senders_running and len( self.clients ) > 1):
-                            print("Starting sender thread")
-                            self.senders_running = True
-                            threading.Thread(target=self._send).start()
+        #                 # if sending thread hasnt started yet, start it. will always have atleast 1 client, since server socket is stored in same array
+        #                 if (not self.senders_running and len( self.clients ) > 1):
+        #                     print("Starting sender thread")
+        #                     self.senders_running = True
+        #                     threading.Thread(target=self._send).start()
 
-                        # TODO: update with current state
+        #                 # TODO: update with current state
 
-                        # client.settimeout(60)
-                    # otherwise new data is available from clients
-                    else:
-                        data = s.recv(size).decode()
-                        # client disconnected
-                        if not data or data == "EXIT":
-                            sock = s.getsockname()
-                            print(f"{sock[0]}:{sock[1]} disconnected")
-                            self.clients.remove(s)
+        #                 # client.settimeout(60)
+        #             # otherwise new data is available from clients
+        #             else:
+        #                 data = s.recv(size).decode()
+        #                 # client disconnected
+        #                 if not data or data == "EXIT":
+        #                     sock = s.getsockname()
+        #                     print(f"{sock[0]}:{sock[1]} disconnected")
+        #                     self.clients.remove(s)
 
-                            # if all clients disconnect, stop sender thread
-                            if (self.senders_running and len( self.clients ) == 1):
-                                print("Stopping sender thread")
-                                self.senders_running = False
-                        else:
-                            data = json.loads(data)
-                            payload = Payload.from_dict(data)
-                            self.on_recieve(payload)
+        #                     # if all clients disconnect, stop sender thread
+        #                     if (self.senders_running and len( self.clients ) == 1):
+        #                         print("Stopping sender thread")
+        #                         self.senders_running = False
+        #                 else:
+        #                     data = json.loads(data)
+        #                     payload = Payload.from_dict(data)
+        #                     self.on_recieve(payload)
 
-                for e in errored:
-                    print("ERROR:", e)
-            except Exception as e:
-                print(e)
+        #         for e in errored:
+        #             print("ERROR:", e)
+        #     except Exception as e:
+        #         print(e)
 
     # TODO: if no clients connected, out_queue will just keep piling up. maybe dont enqueue values if no clients connected
     def send(self, value):
-        # serialize with json
-        self.out_queue.put(json.dumps(Payload(value), cls=OpSerializer))
+        # serialize with proto buffer
+        self.out_queue.put(value.to_proto())

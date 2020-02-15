@@ -53,26 +53,26 @@ class ThreadedClient:
     def _listen(self):
         # TODO: does this need to increase?
         size = 2048
-        while self.listeners_running:
-            try:
-                readable, writable, errored = select.select([ self.sock ], [], [], 1)
-                for s in readable:
-                    data = s.recv(size).decode()
-                    if not data or data == "EXIT":
-                        raise Exception("Socket disconnected")
-                    else:
-                        data = json.loads(data)
-                        payload = Payload.from_dict(data)
-                        self.on_recieve(payload)
+        # while self.listeners_running:
+        #     try:
+        #         readable, writable, errored = select.select([ self.sock ], [], [], 1)
+        #         for s in readable:
+        #             data = s.recv(size).decode()
+        #             if not data or data == "EXIT":
+        #                 raise Exception("Socket disconnected")
+        #             else:
+        #                 data = json.loads(data)
+        #                 payload = Payload.from_dict(data)
+        #                 self.on_recieve(payload)
 
-                for e in errored:
-                    print("ERROR:", e)
-            except Exception as e:
-                print(e)
-                print("Closing socket")
-                self.sock.close()
-                self.running = False
-                return
+        #         for e in errored:
+        #             print("ERROR:", e)
+        #     except Exception as e:
+        #         print(e)
+        #         print("Closing socket")
+        #         self.sock.close()
+        #         self.running = False
+        #         return
 
     def send(self, value):
-        self.out_queue.put(json.dumps(Payload(value), cls=OpSerializer))
+        self.out_queue.put(value.to_proto())
