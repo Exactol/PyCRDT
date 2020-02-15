@@ -8,6 +8,7 @@ from Counter import Counter
 from VectorClock import VectorClock
 from ThreadedClient import ThreadedClient
 from ThreadedServer import ThreadedServer
+from Ops.AddOp import AddOp
 
 if __name__ == "__main__":
 
@@ -31,10 +32,5 @@ if __name__ == "__main__":
     #     else:
     #         counter.increment()
     # server.stop()
-
-    v1 = VectorClock(0)
-    v2 = VectorClock(1, v1.vector).increment()
-    v3 = VectorClock(1, v2.vector)
-    v1 = v1.increment().increment().increment()
-    print(v1 < v2)
-    print(v1 > v2)
+    version = VectorClock(0)
+    op = AddOp(version, "a", 1)

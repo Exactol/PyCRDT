@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
+from Ops.OpType import OpType
+from VectorClock import VectorClock
 
 
 class Op(ABC):
-    def __init__(self, opType, id, field, value):
+    def __init__(self, opType: OpType, id: VectorClock, field: str, value):
         self.id = id
         self.opType = opType
         self.field = field
