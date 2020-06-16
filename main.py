@@ -22,8 +22,8 @@ if __name__ == "__main__":
         print("Starting client")
         server = ThreadedClient('localhost', 1480)
 
-    server.start()
-    counter = Counter(server)
+    # server.start()
+    # counter = Counter(server)
 
     # while True:
     #     inp = input("Press z to exit\n")
@@ -34,4 +34,3 @@ if __name__ == "__main__":
     # server.stop()
     version = VectorClock(0)
     op = AddOp(version, "a", 1)
-    print( op.to_proto())

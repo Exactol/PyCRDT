@@ -1,6 +1,5 @@
 from Ops.Op import Op
 from Ops.OpType import OpType
-from Ops.ProtoBuffers.AddOp_pb2 import AddOp as AddOp_pb2
 
 
 class AddOp(Op):
@@ -13,11 +12,3 @@ class AddOp(Op):
 
   def undo(self, state):
     pass
-
-  def from_proto(self, proto):
-    pass
-
-  def to_proto(self):
-    proto = AddOp_pb2()
-    proto.id = self.id
-    return proto
