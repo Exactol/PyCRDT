@@ -5,6 +5,8 @@ class Payload:
     def __init__(self, val):
         self.value = val
         self.type = type(val).__name__
+        self.module = type(val).__module__
+        self.name = type(val).__qualname__
 
     @staticmethod
     def from_dict(val: dict):
@@ -14,6 +16,7 @@ class Payload:
 
     # TODO: kindof hacky
     def deserialize(self):
-        inst = getattr(importlib.import_module(f"Ops.{self.type}"), self.type)(None, None, None)
+        # inst = getattr(importlib.import_module(f"Ops.{self.type}"), self.type)(None, None, None)
+        inst = getattr(importlib.import_module(self.module), self.name)(None, None, None)
         inst.__dict__ = self.value
         return inst
