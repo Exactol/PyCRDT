@@ -4,15 +4,12 @@ from Ops.AddOp import AddOp
 from Ops.Op import Op
 from Ops.OpType import OpType
 from json import loads
-from JSON.Payload import Payload
 from Callback import Callback
-
 
 class CRDTStore:
     def __init__(self, server = None, user_id = 0, initial_version = None, initial = {}):
         self.state = initial
         self.initial_state = initial
-        # self.history = [] # TODO: make own class so history can be stored in order of version clock
         self.history = History()
 
         self.user_id = user_id
@@ -24,9 +21,7 @@ class CRDTStore:
 
         self.on_update = Callback()
 
-    def on_recieve(self, payload: Payload):
-        # deserialize
-        op: Op = payload.deserialize()
+    def on_recieve(self, op: Op):
         # merge
         self.merge(op)
 

@@ -3,7 +3,7 @@ from functools import reduce
 
 from CRDTStore import CRDTStore
 from Ops.AddOp import AddOp
-from ThreadedClient import ThreadedClient
+from Server import ThreadedClient
 
 
 class Counter:

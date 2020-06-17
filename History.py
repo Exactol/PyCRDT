@@ -11,9 +11,8 @@ class History():
     # insert history in correct order by Vector clock versioning
     for i, item in enumerate(self.history):
       insert = True
-      print("h", op.id, item.id)
-      for user_id, version in op.id.items():
-        if user_id in item.id and item.id[user_id] <= version:
+      for user_id, version in op.id.vector.items():
+        if user_id in item.id.vector and item.id.vector[user_id] <= version:
           insert = False
           break
 
