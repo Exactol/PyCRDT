@@ -59,5 +59,5 @@ class ThreadedClient(ServerBase):
         self.running = False
         return
 
-  def send(self, value):
-    self.out_queue.put(json.dumps(value, cls=CRDTEncoder))
+  def send(self, value: object):
+    super().send(value)

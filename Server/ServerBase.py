@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from queue import Empty, Queue
 from Callback import Callback
+from JsonUtils import CRDTEncoder
+import json
 import socket
 
 class ServerBase(ABC):
@@ -27,6 +29,5 @@ class ServerBase(ABC):
   def stop(self):
     pass
 
-  @abstractmethod
   def send(self, value: object):
-    pass
+    self.out_queue.put(json.dumps(value, cls=CRDTEncoder))

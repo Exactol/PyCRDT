@@ -92,7 +92,6 @@ class ThreadedServer(ServerBase):
       except Exception as e:
         print(e)
 
-  # TODO: if no clients connected, out_queue will just keep piling up. maybe dont enqueue values if no clients connected
   def send(self, value: object):
-    # serialize with json
-    self.out_queue.put(json.dumps(value, cls=CRDTEncoder))
+    if (len( self.clients ) > 1):
+      super().send(value)
