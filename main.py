@@ -6,16 +6,15 @@ from typing import Union
 
 from Counter import Counter
 from VectorClock import VectorClock
-from Server import ThreadedClient, ThreadedServer
+from Server import ThreadedClient, ThreadedServer, ServerBase
 from Ops.AddOp import AddOp
 from json import dumps, loads
 from JsonUtils import CRDTDecoder, CRDTEncoder
 
 if __name__ == "__main__":
-
     server_mode = sys.argv[1] == "--server"
 
-    server: Union[ ThreadedServer, ThreadedClient ] = None
+    server: ServerBase = None
     if (server_mode):
         print("Starting server")
         server = ThreadedServer('localhost', 1480)
