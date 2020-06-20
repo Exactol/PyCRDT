@@ -61,3 +61,7 @@ class ThreadedClient(ServerBase):
 
   def send(self, value: object):
     super().send(value)
+
+  # perform handshake with master server to get current state and user id
+  def initialize(self):
+    self.send("__INITIALIZE__")

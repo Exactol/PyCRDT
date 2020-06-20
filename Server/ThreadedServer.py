@@ -95,3 +95,7 @@ class ThreadedServer(ServerBase):
   def send(self, value: object):
     if (len( self.clients ) > 1):
       super().send(value)
+
+  # master server does not need to initialize
+  def initialize(self):
+    pass

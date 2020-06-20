@@ -4,8 +4,9 @@ from Callback import Callback
 from JsonUtils import CRDTEncoder
 import json
 import socket
+from .ServerProvider import ServerProvider
 
-class ServerBase(ABC):
+class ServerBase(ServerProvider, ABC):
   def __init__(self, host, port):
     self.host = host
     self.port = port
@@ -20,14 +21,6 @@ class ServerBase(ABC):
 
     self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-  @abstractmethod
-  def start(self):
-    pass
-
-  @abstractmethod
-  def stop(self):
-    pass
 
   def send(self, value: object):
     self.out_queue.put(json.dumps(value, cls=CRDTEncoder))

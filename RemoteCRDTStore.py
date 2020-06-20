@@ -1,26 +1,26 @@
 from CRDTStore import CRDTStore
-from Ops import Op, InitializeOp
-from Server import ServerBase
+from Ops import Op, InitializeOp, StateUpdateOp
+from Server import ServerProvider
+from typing import Union
 
 class RemoteCRDTStore(CRDTStore):
-  def __init__(self, server: ServerBase, user_id = 0, initial_version = None, initial = {}):
+  def __init__(self, server: ServerProvider, user_id = 0, initial_version = None, initial = {}):
     super().__init__(user_id, initial_version, initial)
 
-    self.server: ServerBase = server
+    self.server = server
     self.server.on_recieve += self.on_recieve
 
-    self.server.send(InitializeOp())
+    self.server.initialize()
 
-  def on_recieve(self, op: Op):
-    # merge
-    self.merge(op)
+  def on_recieve(self, op: Union[Op, str]):
+    if (isinstance(op, Op)):
+      self.merge(op)
 
-    if (isinstance(op, InitializeOp)):
-      print("INITIALIZE RECIEVED")
+    elif (op == "__INITIALIZE__"):
+      print(op)
 
   def apply(self, op: Op):
     super().apply(op)
 
     # send op to clients
-    if self.server is not None:
-      self.server.send(op)
+    self.server.send(op)
