@@ -8,7 +8,7 @@
             "name": "CRDT - Client",
             "type": "python",
             "request": "launch",
-            "program": "main.py",
+            "program": "${cwd}/main.py",
             "console": "integratedTerminal",
             "args": ["--server"]
         }

@@ -1,5 +1,5 @@
 from CRDTStore import CRDTStore
-from Ops import Op, InitializeOp, StateUpdateOp
+from Ops import Op
 from Server import ServerProvider
 from typing import Union
 
@@ -16,8 +16,8 @@ class RemoteCRDTStore(CRDTStore):
     if (isinstance(op, Op)):
       self.merge(op)
 
-    elif (op == "__INITIALIZE__"):
-      print(op)
+    # elif (op == "__INITIALIZE__"):
+
 
   def apply(self, op: Op):
     super().apply(op)
