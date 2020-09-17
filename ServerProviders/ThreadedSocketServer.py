@@ -8,9 +8,9 @@ from typing import List
 from Callback import Callback
 from JsonUtils import CRDTEncoder, CRDTDecoder
 
-from .ServerBase import ServerBase
+from ServerProviders.ThreadedSocketBase import ThreadedSocketBase
 
-class ThreadedServer(ServerBase):
+class ThreadedSocketServer(ThreadedSocketBase):
   def __init__(self, host, port):
     super().__init__(host, port)
     self.sock.bind((self.host, self.port))

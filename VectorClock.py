@@ -1,6 +1,10 @@
 from typing import Dict
 
+# TODO: comparison might be wrong: https://www.youtube.com/watch?v=OOlnp2bZVRs
 class VectorClock():
+  """
+  A vector clock used for causality
+  """
   def __init__(self, user_id: int, vector: Dict[int, int] = None):
     self.user_id = user_id
     if vector:
@@ -12,6 +16,9 @@ class VectorClock():
 
   # doesnt mutate original object. We only want to set a new version once an update has been merged
   def increment(self):
+    """
+    Returns a new VectorClock with a incremented value based on user id
+    """
     newVector = self.vector.copy()
     if self.user_id in newVector:
         newVector[self.user_id] += 1
@@ -20,6 +27,9 @@ class VectorClock():
     return VectorClock(self.user_id, newVector)
 
   def merge(self, new_vector):
+    """
+    Merges two vector clocks
+    """
     # update id vector clock with maximum id for each id
     for id, value in new_vector.vector.items():
         # must cast id to int, as ints cannot be JSON keys
@@ -35,8 +45,7 @@ class VectorClock():
     return not self == vector
 
   def __lt__(self, vector):
-    # print(f"self: {self.vector}\tOther: {vector.vector}")
-    if (self.vector == vector.vector):
+    if (self == vector):
       return False
 
     # ensure that shared user id versions come before
@@ -59,3 +68,6 @@ class VectorClock():
 
   def __str__(self):
     return f"Vector Version: {str(self.vector)}"
+
+  def __repr__(self):
+    return str(self.vector)

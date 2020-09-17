@@ -1,10 +1,8 @@
 import asyncio
 from functools import reduce
 
-from RemoteCRDTStore import RemoteCRDTStore
-from Ops.AddOp import AddOp
-from Server import ThreadedClient
-from CRDT import CRDT
+from ServerProviders import ThreadedSocketClient
+from CRDT import CRDT, RemoteCRDTStore
 
 
 class Counter:

@@ -1,6 +1,6 @@
-from CRDTStore import CRDTStore
+from CRDT import CRDTStore
 from Ops import Op
-from Server import ServerProvider
+from ServerProviders import ServerProvider
 from typing import Union
 
 class RemoteCRDTStore(CRDTStore):

@@ -1,5 +1,7 @@
 from enum import Enum
 
 class OpType(Enum):
-    Add = 0
-    Remove = 1
+    Set = 0
+    Delete = 1
+    Insert = 2
+    Undo = 3

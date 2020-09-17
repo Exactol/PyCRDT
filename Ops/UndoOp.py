@@ -1,9 +1,11 @@
+
 from .Op import Op
 from .OpType import OpType
 from VectorClock import VectorClock
 from typing import Any
 
-class AddOp(Op):
+# TODO:
+class UndoOp(Op):
   """
   Sets the value of a field
   """

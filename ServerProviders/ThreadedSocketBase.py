@@ -4,9 +4,11 @@ from Callback import Callback
 from JsonUtils import CRDTEncoder
 import json
 import socket
-from .ServerProvider import ServerProvider
+from random import randint
+from ServerProviders.ServerProvider import ServerProvider
 
-class ServerBase(ServerProvider, ABC):
+class ThreadedSocketBase(ServerProvider, ABC):
+  "Abstract base class for threaded socket servers"
   def __init__(self, host, port):
     self.host = host
     self.port = port

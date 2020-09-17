@@ -5,9 +5,9 @@ import threading
 from queue import Empty, Queue
 
 from JsonUtils import CRDTEncoder, CRDTDecoder
-from .ServerBase import ServerBase
+from ServerProviders.ThreadedSocketBase import ThreadedSocketBase
 
-class ThreadedClient(ServerBase):
+class ThreadedSocketClient(ThreadedSocketBase):
   def __init__(self, host, port):
     super().__init__(host, port)
     self.sock.connect((host, port))
