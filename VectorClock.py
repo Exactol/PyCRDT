@@ -8,7 +8,10 @@ class VectorClock():
   A vector clock used for causality
   """
   def __init__(self, vector: Dict[Any, int] = {}):
-    self.vector = vector.copy()
+    if vector is not None:
+      self.vector = vector.copy()
+    else:
+        self.vector = {}
 
   def get(self, identifier: Any):
     """
@@ -75,7 +78,7 @@ class VectorClock():
     return self > other or self == other
 
   def __str__(self):
-    return f"Vector Version: {str(self.vector)}"
+    return f"v{str(self.vector)}"
 
   def __repr__(self):
     return str(self.vector)

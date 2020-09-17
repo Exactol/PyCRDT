@@ -18,5 +18,6 @@ class MapTest:
     pass
 
   def __str__(self):
-    return f"""{self.state.store.state}
-{" -> ".join(map(lambda x: str(x.id), self.state.store.history))}"""
+    return f"""State: {self.state.store.state}
+Version: {self.state.store.clock}"""
+# {" -> ".join(map(lambda x: str(x.id), self.state.store.history))}"""

@@ -12,13 +12,17 @@ class CRDT:
     # setup correct initial state
     initial_state = {k: (VectorClock(user_id), v) for k, v in initial_state.items()}
 
-    self.store = CRDTStore(user_id, initial_version, initial_state)
+    self.user_id = user_id
+    self.store = CRDTStore(initial_version, initial_state)
 
     # forward callbacks from base store to listeners
     self.on_update = self.store.on_update
 
   def set(self, field, value):
-    next_version = self.store.version.increment()
+    """
+    Generates a Set operation and applies it to the backing CRDT store
+    """
+    next_version = self.store.clock.increment(self.user_id)
     op = SetOp(field, value, next_version)
     self.store.apply(op)
 
