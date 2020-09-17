@@ -1,70 +1,78 @@
 from typing import Dict
+from typing import Any
+from VectorClockEntry import VectorClockEntry
 
 # TODO: comparison might be wrong: https://www.youtube.com/watch?v=OOlnp2bZVRs
 class VectorClock():
   """
   A vector clock used for causality
   """
-  def __init__(self, user_id: int, vector: Dict[int, int] = None):
-    self.user_id = user_id
-    if vector:
-      self.vector = vector.copy()
-      if user_id not in self.vector:
-        self.vector[user_id] = 0
-    else:
-      self.vector = {user_id: 0}
+  def __init__(self, vector: Dict[Any, int] = {}):
+    self.vector = vector.copy()
+
+  def get(self, identifier: Any):
+    """
+    Gets the clock value of an identifier, if it doesn't exist defaults to 0
+    """
+    return self.vector.get(identifier, 0)
+
+  def entry(self, identifier: Any):
+    """
+    Return the VectorClockEntry for the identifier
+    """
+    return VectorClockEntry(identifier, self.get(identifier))
 
   # doesnt mutate original object. We only want to set a new version once an update has been merged
-  def increment(self):
+  def increment(self, identifier: Any):
     """
-    Returns a new VectorClock with a incremented value based on user id
+    Returns a new VectorClockEntry with a incremented value based on user id. Does not mutate the clock
     """
-    newVector = self.vector.copy()
-    if self.user_id in newVector:
-        newVector[self.user_id] += 1
-    else:
-        newVector[self.user_id] = 0
-    return VectorClock(self.user_id, newVector)
+    return self.entry(identifier).increment()
 
-  def merge(self, new_vector):
+  def apply(self, entry: VectorClockEntry):
     """
-    Merges two vector clocks
+    Applies a VectorClockEntry to the clock. Clock is only updated if the new VectorClockEntry has a greater value than the existing one
     """
-    # update id vector clock with maximum id for each id
-    for id, value in new_vector.vector.items():
-        # must cast id to int, as ints cannot be JSON keys
-        if id in self.vector:
-            self.vector[int(id)] = max(self.vector[int(id)], value)
-        else:
-            self.vector[int(id)] = value
+    # only apply if the entry is a newer version
+    if self.get(entry.identifier) < entry.counter:
+      self.vector[entry.identifier] = entry.counter
 
-  def __eq__(self, vector):
-    return self.vector == vector.vector
+  # TODO: should there be a custom sort function?
+  # VectorClocks have a partial order, so VectorClock A might not be comparable to VectorClock B and should return None.
+  # This happens when A != B and !(A < B) and !(A > B)
+  def concurrent(self, clock):
+    """
+    Determines if two vector clocks have diverged
+    This happens when A != B and !(A < B) and !(A > B)
+    """
+    return (self != clock and not (self < clock) and not (self > clock))
 
-  def __ne__(self, vector):
-    return not self == vector
+  def __eq__(self, other):
+    """
+    VectorClock A == VectorClock B if all VectorClockEntries are equal
+    """
+    return self.vector == other.vector
 
-  def __lt__(self, vector):
-    if (self == vector):
-      return False
+  def __ne__(self, other):
+    return not self == other
 
-    # ensure that shared user id versions come before
-    isBefore = all(self.vector[user_id] <= vector.vector[user_id] for user_id, _ in zip(self.vector.keys(), vector.vector.keys()))
+  def __lt__(self, other):
+    """
+    VectorClock A < VectorClock B if all counters in A are less than those in B, using the identifiers from A
+    """
+    return all(self.get(identifier) <= other.get(identifier) for identifier in self.vector.keys())
 
-    # if before, make sure other vector doesnt have extra keys
-    if isBefore:
-      # if other vector contains more keys, it is older
-      isBefore = len(self.vector.keys()) <= len(vector.vector.keys())
-    return isBefore
+  def __gt__(self, other):
+    """
+    VectorClock A > VectorClock B if all counters in A are greater than those in B, using the identifiers from B
+    """
+    return all(self.get(identifier) >= other.get(identifier) for identifier in other.vector.keys())
 
-  def __gt__(self, vector):
-    return not self < vector
+  def __le__(self, other):
+    return self < other or self == other
 
-  def __le__(self, vector):
-    return self < vector or self == vector
-
-  def __ge__(self, vector):
-    return self > vector or self == vector
+  def __ge__(self, other):
+    return self > other or self == other
 
   def __str__(self):
     return f"Vector Version: {str(self.vector)}"
