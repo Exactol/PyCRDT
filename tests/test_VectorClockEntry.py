@@ -2,7 +2,7 @@ import unittest
 from VectorClockEntry import VectorClockEntry
 
 class VectorClockEntryTests(unittest.TestCase):
-  def test_new(self):
+  def test_ctor(self):
     a = VectorClockEntry("abc")
     self.assertEqual(a.identifier, "abc")
     self.assertEqual(a.counter, 0)

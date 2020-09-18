@@ -1,9 +1,9 @@
-from CRDT import CRDTStore
+from CRDT import Map
 from Ops import Op
 from ServerProviders import ServerProvider
 from typing import Union
 
-class RemoteCRDTStore(CRDTStore):
+class RemoteCRDTStore(Map):
   def __init__(self, server: ServerProvider, user_id = 0, initial_version = None, initial = {}):
     super().__init__(user_id, initial_version, initial)
 

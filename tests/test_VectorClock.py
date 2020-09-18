@@ -3,7 +3,7 @@ from VectorClock import VectorClock
 from VectorClockEntry import VectorClockEntry
 
 class VectorClockTests(unittest.TestCase):
-  def test_new(self):
+  def test_ctor(self):
     a = VectorClock()
     self.assertDictEqual(a.vector, {})
 
@@ -106,6 +106,20 @@ class VectorClockTests(unittest.TestCase):
     b.apply(VectorClockEntry("bar", 21))
     self.assertEqual(b > a, True)
     self.assertEqual(a < b, True)
+    self.assertEqual(b != a, True)
+
+    a = VectorClock()
+    b = VectorClock()
+    b.apply(VectorClockEntry("foo", 12))
+    self.assertEqual(a < b, True)
+    self.assertEqual(b > a, True)
+    self.assertEqual(b != a, True)
+
+    a = VectorClock()
+    b = VectorClock()
+    b.apply(VectorClockEntry("foo", 12))
+    self.assertEqual(a > b, False)
+    self.assertEqual(b < a, False)
     self.assertEqual(b != a, True)
 
   def test_concurrent(self):

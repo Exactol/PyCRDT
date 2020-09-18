@@ -11,3 +11,9 @@ class CRDTEntry():
 
   def __repr__(self):
     return f"{self.value}@{self.clock}"
+
+  def __eq__(self, other):
+    return self.value == other.value and self.clock == other.clock
+
+  def copy(self):
+    return CRDTEntry(self.value, self.clock.copy())

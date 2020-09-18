@@ -30,6 +30,7 @@ class VectorClock():
     """
     Returns a new VectorClockEntry with a incremented value based on user id. Does not mutate the clock
     """
+    # TODO: does identifier need to be cloned?
     return self.entry(identifier).increment()
 
   def apply(self, entry: VectorClockEntry):
@@ -39,6 +40,8 @@ class VectorClock():
     # only apply if the entry is a newer version
     if self.get(entry.identifier) < entry.counter:
       self.vector[entry.identifier] = entry.counter
+
+    return self
 
   # TODO: should there be a custom sort function?
   # VectorClocks have a partial order, so VectorClock A might not be comparable to VectorClock B and should return None.
@@ -82,3 +85,6 @@ class VectorClock():
 
   def __repr__(self):
     return str(self.vector)
+
+  def copy(self):
+    return VectorClock(self.vector)

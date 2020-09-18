@@ -29,7 +29,7 @@ class SetOp(Op):
     state[self.field] = entry
     # Update master clock
     clock.apply(self.clock_entry)
-    return state
+    return
 
   def undo(self, state):
     # TODO: if previous is null, field didnt previously exist and should be tombstoned

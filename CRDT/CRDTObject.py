@@ -1,4 +1,4 @@
-from CRDT.CRDTStore import CRDTStore
+from CRDT.Map import Map
 from Ops import SetOp, DeleteOp
 from VectorClock import VectorClock
 from typing import Dict, Any
@@ -13,7 +13,7 @@ class CRDT:
     initial_state = {k: (VectorClock(user_id), v) for k, v in initial_state.items()}
 
     self.user_id = user_id
-    self.store = CRDTStore(initial_version, initial_state)
+    self.store = Map(initial_version, initial_state)
 
     # forward callbacks from base store to listeners
     self.on_update = self.store.on_update
