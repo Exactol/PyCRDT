@@ -8,70 +8,94 @@ from VectorClockEntry import VectorClockEntry
 class LWWRegisterTests(TestCase):
   def test_ctor(self):
     a = LWWRegister()
-    self.assertEqual(a.state.value, None)
-    self.assertEqual(a.state.clock, VectorClock())
+    self.assertEqual(a.get(), None)
+    self.assertEqual(a.clock(), VectorClock())
 
-    a = LWWRegister(CRDTEntry("foo"))
-    self.assertEqual(a.state.value, "foo")
-    self.assertEqual(a.state.clock, VectorClock())
+    a = LWWRegister("foo")
+    self.assertEqual(a.get(), "foo")
+    self.assertEqual(a.clock(), VectorClock())
 
-    a = LWWRegister(CRDTEntry("foo", VectorClock({"bar": 1})))
-    self.assertEqual(a.state.value, "foo")
-    self.assertEqual(a.state.clock, VectorClock({"bar": 1}))
+    a = LWWRegister("foo", VectorClock({"bar": 1}))
+    self.assertEqual(a.get(), "foo")
+    self.assertEqual(a.clock(), VectorClock({"bar": 1}))
 
     # ensure mutating initial_state doesn't affect default param values
     a = LWWRegister()
-    a.state.value = 15
-    a.state.clock = VectorClock({"foo": 1})
+    a._state = 15
+    a._clock = VectorClock({"foo": 1})
     a = LWWRegister()
-    self.assertEqual(a.state.value, None)
-    self.assertEqual(a.state.clock, VectorClock())
+    self.assertEqual(a.get(), None)
+    self.assertEqual(a.clock(), VectorClock())
 
   def test_get(self):
     a = LWWRegister()
     self.assertEqual(a.get(), None)
 
     a = LWWRegister()
-    a.state.value = "foo"
+    a._state = "foo"
     self.assertEqual(a.get(), "foo")
-    self.assertEqual(a.state.value, "foo")
+    self.assertEqual(a._state, "foo")
 
     a = LWWRegister()
     a.apply(SetOp(None, "foo", VectorClockEntry("bar", 1)))
     self.assertEqual(a.get(), "foo")
-    self.assertEqual(a.state.value, "foo")
+    self.assertEqual(a._state, "foo")
 
   def test_set(self):
     # test update on default register
     a = LWWRegister()
     a.apply(SetOp(None, "foo", VectorClockEntry("bar", 1)))
-    self.assertEqual(a.state.value, "foo")
-    self.assertEqual(a.state.clock, VectorClock({"bar": 1}))
+    self.assertEqual(a.get(), "foo")
+    self.assertEqual(a.clock(), VectorClock({"bar": 1}))
 
     # test normal update
     a = LWWRegister()
     a.apply(SetOp(None, "foo", VectorClockEntry("bar", 1)))
     a.apply(SetOp(None, "baz", VectorClockEntry("bar", 2)))
-    self.assertEqual(a.state.value, "baz")
-    self.assertEqual(a.state.clock, VectorClock({"bar": 2}))
+    self.assertEqual(a.get(), "baz")
+    self.assertEqual(a.clock(), VectorClock({"bar": 2}))
 
     # test stale update - new op has older version
     a = LWWRegister()
     a.apply(SetOp(None, "foo", VectorClockEntry("bar", 5)))
     a.apply(SetOp(None, "baz", VectorClockEntry("bar", 2)))
-    self.assertEqual(a.state.value, "foo")
-    self.assertEqual(a.state.clock, VectorClock({"bar": 5}))
+    self.assertEqual(a.get(), "foo")
+    self.assertEqual(a.clock(), VectorClock({"bar": 5}))
+    a.apply(SetOp(None, "bar", VectorClockEntry("bar", 10)))
+    self.assertEqual(a.get(), "bar")
+    self.assertEqual(a.clock(), VectorClock({"bar": 10}))
 
     # test duplicate update - new op has same value and clock
     a = LWWRegister()
     a.apply(SetOp(None, "foo", VectorClockEntry("bar", 2)))
     a.apply(SetOp(None, "foo", VectorClockEntry("bar", 2)))
-    self.assertEqual(a.state.value, "foo")
-    self.assertEqual(a.state.clock, VectorClock({"bar": 2}))
+    self.assertEqual(a.get(), "foo")
+    self.assertEqual(a.clock(), VectorClock({"bar": 2}))
 
     # test bad update - new op has different value and same clock
     a = LWWRegister()
     a.apply(SetOp(None, "foo", VectorClockEntry("bar", 2)))
-    self.assertRaises(Exception("Conflicting Clocks"), a.apply(SetOp(None, "baz", VectorClockEntry("bar", 2))))
-    self.assertEqual(a.state.value, "foo")
-    self.assertEqual(a.state.clock, VectorClock({"bar": 2}))
+    with self.assertRaises(Exception):
+      a.apply(SetOp(None, "baz", VectorClockEntry("bar", 2)))
+    self.assertEqual(a.get(), "foo")
+    self.assertEqual(a.clock(), VectorClock({"bar": 2}))
+
+  def test_clone(self):
+    a = LWWRegister()
+    b = a.clone()
+    self.assertEqual(a.get(), b.get())
+    self.assertEqual(a.clock(), b.clock())
+
+    # test mutating A doesnt mutate B
+    a = LWWRegister()
+    b = a.clone()
+    a.apply(SetOp(None, "foo", VectorClockEntry("bar", 1)))
+    self.assertNotEqual(a.get(), b.get())
+    self.assertNotEqual(a.clock(), b.clock())
+
+    # test mutating B doesnt mutate A
+    a = LWWRegister()
+    b = a.clone()
+    b.apply(SetOp(None, "foo", VectorClockEntry("bar", 1)))
+    self.assertNotEqual(a.get(), b.get())
+    self.assertNotEqual(a.clock(), b.clock())
