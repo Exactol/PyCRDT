@@ -5,3 +5,4 @@ class OpType(Enum):
     Delete = 1
     Insert = 2
     Undo = 3
+    Dummy = -1 # for testing purposes only

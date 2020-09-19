@@ -2,6 +2,7 @@ from unittest import TestCase
 from CRDT.LWWRegister import LWWRegister
 from CRDT.CRDTEntry import CRDTEntry
 from Ops.SetOp import SetOp
+from Ops.DummyOp import DummyOp
 from VectorClock import VectorClock
 from VectorClockEntry import VectorClockEntry
 
@@ -79,6 +80,14 @@ class LWWRegisterTests(TestCase):
       a.apply(SetOp(None, "baz", VectorClockEntry("bar", 2)))
     self.assertEqual(a.get(), "foo")
     self.assertEqual(a.clock(), VectorClock({"bar": 2}))
+
+    # test applying unsupported operations
+    a = LWWRegister()
+    op = DummyOp()
+    with self.assertRaises(Exception):
+      a.apply(op)
+    self.assertEqual(a.clock(), VectorClock())
+    self.assertEqual(a.get(), None)
 
   def test_clone(self):
     a = LWWRegister()

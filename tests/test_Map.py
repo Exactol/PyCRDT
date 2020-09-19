@@ -3,6 +3,7 @@ from CRDT.LWWRegister import LWWRegister
 from CRDT.Map import Map
 from CRDT.CRDTEntry import CRDTEntry
 from Ops.SetOp import SetOp
+from Ops.DummyOp import DummyOp
 from VectorClock import VectorClock
 from VectorClockEntry import VectorClockEntry
 
@@ -92,6 +93,16 @@ class CRDTStoreTests(unittest.TestCase):
     self.assertEqual(a.get("reg").value.get(), "Hello World")
     self.assertEqual(a.get("reg").value.clock(), VectorClock({"User2": 1}))
     self.assertDictEqual(a._initial_state, {})
+
+    # test applying unsupported operations
+    a = Map()
+    op = DummyOp()
+    with self.assertRaises(Exception):
+      a.apply(op)
+    self.assertEqual(a.clock(), VectorClock())
+    self.assertDictEqual(a._state, {})
+    self.assertDictEqual(a._initial_state, {})
+
 
   # def test_convergance(self):
   #   op = SetOp("foo", "bar", a.clock.increment("baz"))

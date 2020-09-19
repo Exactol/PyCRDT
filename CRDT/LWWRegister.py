@@ -8,9 +8,11 @@ from Ops.SetOp import SetOp
 
 class LWWRegister(CmRDT):
   """
-  Last-Writer-Wins Register CRDT
+  Last-Writer-Wins Register (LWW Register)
+  CmRDT (Operation based)
 
-  Holds an arbitrary value. The value is updated according to the timestamp of the Op
+  Register holds an arbitrary value.
+  Timestamps are assigned to each update and are used to create a total order of updates
   """
   def __init__(self, initial_state: Any = None, initial_clock: VectorClock = VectorClock()):
     # TODO: does initial state need to be cloned

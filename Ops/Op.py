@@ -11,12 +11,3 @@ class Op(ABC):
         self.value = value
         self.clock_entry = clock_entry
         self.opType = opType
-
-    # TODO: move this implementation to the CRDT classes
-    @abstractmethod
-    def apply(self, state, clock):
-        pass
-
-    @abstractmethod
-    def undo(self, state):
-        pass
