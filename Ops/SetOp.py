@@ -1,7 +1,7 @@
 from Ops.Op import Op
 from Ops.OpType import OpType
-from VectorClockEntry import VectorClockEntry
-from VectorClock import VectorClock
+from Causality.VectorClockEntry import VectorClockEntry
+from Causality.VectorClock import VectorClock
 from typing import Any, Dict
 from CRDT.CRDTEntry import CRDTEntry
 

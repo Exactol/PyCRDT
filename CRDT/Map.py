@@ -1,4 +1,4 @@
-from VectorClock import VectorClock
+from Causality.VectorClock import VectorClock
 from History import History
 from Ops import SetOp, Op, OpType
 from json import loads

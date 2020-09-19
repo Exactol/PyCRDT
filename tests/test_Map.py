@@ -4,8 +4,8 @@ from CRDT.Map import Map
 from CRDT.CRDTEntry import CRDTEntry
 from Ops.SetOp import SetOp
 from Ops.DummyOp import DummyOp
-from VectorClock import VectorClock
-from VectorClockEntry import VectorClockEntry
+from Causality.VectorClock import VectorClock
+from Causality.VectorClockEntry import VectorClockEntry
 
 class CRDTStoreTests(unittest.TestCase):
   def test_ctor(self):

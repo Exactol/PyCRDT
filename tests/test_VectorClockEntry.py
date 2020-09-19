@@ -1,5 +1,5 @@
 import unittest
-from VectorClockEntry import VectorClockEntry
+from Causality.VectorClockEntry import VectorClockEntry
 
 class VectorClockEntryTests(unittest.TestCase):
   def test_ctor(self):

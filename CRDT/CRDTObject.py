@@ -1,6 +1,6 @@
 from CRDT.Map import Map
 from Ops import SetOp, DeleteOp
-from VectorClock import VectorClock
+from Causality.VectorClock import VectorClock
 from typing import Dict, Any
 from Callback import Callback
 
@@ -22,7 +22,7 @@ class CRDT:
     """
     Generates a Set operation and applies it to the backing CRDT store
     """
-    next_version = self.store.clock.increment(self.user_id)
+    next_version = self.store.clock().increment(self.user_id)
     op = SetOp(field, value, next_version)
     self.store.apply(op)
 

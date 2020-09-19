@@ -1,6 +1,6 @@
 from CRDT.CmRDT import CmRDT
 from CRDT.CRDTEntry import CRDTEntry
-from VectorClock import VectorClock
+from Causality.VectorClock import VectorClock
 from typing import Dict, Any
 from Callback import Callback
 from Ops.Op import Op

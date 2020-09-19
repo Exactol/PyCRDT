@@ -1,7 +1,7 @@
 
 from .Op import Op
 from .OpType import OpType
-from VectorClock import VectorClock
+from Causality.VectorClock import VectorClock
 from typing import Any
 
 # TODO:

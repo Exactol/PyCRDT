@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from Ops.OpType import OpType
-from VectorClock import VectorClock
-from VectorClockEntry import VectorClockEntry
+from Causality.VectorClockEntry import VectorClockEntry
 from typing import Any
 
 class Op(ABC):

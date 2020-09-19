@@ -1,6 +1,6 @@
 from Ops.Op import Op
 from Ops.OpType import OpType
-from VectorClock import VectorClock
+from Causality.VectorClock import VectorClock
 from typing import Any
 
 class DeleteOp(Op):

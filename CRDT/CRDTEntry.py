@@ -1,4 +1,4 @@
-from VectorClock import VectorClock
+from Causality.VectorClock import VectorClock
 from typing import Any
 
 class CRDTEntry():

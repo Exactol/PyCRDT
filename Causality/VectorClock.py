@@ -1,6 +1,6 @@
 from typing import Dict
 from typing import Any
-from VectorClockEntry import VectorClockEntry
+from Causality.VectorClockEntry import VectorClockEntry
 
 # TODO: comparison might be wrong: https://www.youtube.com/watch?v=OOlnp2bZVRs
 class VectorClock():

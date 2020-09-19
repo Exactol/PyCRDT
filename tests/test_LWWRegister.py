@@ -3,8 +3,8 @@ from CRDT.LWWRegister import LWWRegister
 from CRDT.CRDTEntry import CRDTEntry
 from Ops.SetOp import SetOp
 from Ops.DummyOp import DummyOp
-from VectorClock import VectorClock
-from VectorClockEntry import VectorClockEntry
+from Causality.VectorClock import VectorClock
+from Causality.VectorClockEntry import VectorClockEntry
 
 class LWWRegisterTests(TestCase):
   def test_ctor(self):
